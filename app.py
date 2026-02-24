@@ -18,23 +18,14 @@ st.set_page_config(page_title="로또번호 (TaePung)", page_icon="🎲", layout
 st.markdown(
     """
     <style>
-      /* 제목 중앙 */
+      /* 제목 기본 왼쪽 정렬 */
       h1 {
         font-size: 1.55rem !important;
         margin-bottom: 0.7rem;
-        text-align: center;
       }
 
-      /* 버튼 영역 전체 중앙 고정 */
-      div.stButton {
-        text-align: center;
-      }
-
-      /* 버튼 자체 중앙 + 폭 조절 */
-      div.stButton > button {
-        margin: 0 auto;
-        display: inline-block;
-        width: 70%;
+      /* 버튼 기본 Streamlit 스타일 유지 */
+      .stButton>button {
         padding: 0.75rem 1rem;
         font-size: 1.15rem;
         font-weight: 800;
@@ -78,12 +69,12 @@ st.markdown(
         user-select: none;
       }
 
-      /* 구간 색상 */
-      .b1 { background: #f6c343; color: #111; }
-      .b2 { background: #1e88e5; color: #fff; }
-      .b3 { background: #e53935; color: #fff; }
-      .b4 { background: #9e9e9e; color: #111; }
-      .b5 { background: #43a047; color: #fff; }
+      /* 구간별 색상 */
+      .b1 { background: #f6c343; color: #111; } /* 1~9 */
+      .b2 { background: #1e88e5; color: #fff; } /* 10~19 */
+      .b3 { background: #e53935; color: #fff; } /* 20~29 */
+      .b4 { background: #9e9e9e; color: #111; } /* 30~39 */
+      .b5 { background: #43a047; color: #fff; } /* 40~45 */
 
       .tp-balls {
         display: inline-flex;
