@@ -14,36 +14,72 @@ MAX_TRIES = 5000
 
 st.set_page_config(page_title="로또번호 (TaePung)", page_icon="🎲", layout="centered")
 
-# ---- 모바일 가독성용 CSS ----
+# ---- UI CSS ----
 st.markdown(
     """
     <style>
-      /* 타이틀 살짝 조정 */
-      h1 { margin-bottom: 0.6rem; }
+      h1 { font-size: 1.55rem !important; margin-bottom: 0.55rem; }
 
-      /* 버튼 크게 */
       .stButton>button {
         width: 100%;
-        padding: 0.9rem 1rem;
-        font-size: 1.25rem;   /* 크게 */
+        padding: 0.75rem 1rem;
+        font-size: 1.15rem;
         font-weight: 800;
         border-radius: 14px;
       }
 
-      /* 결과 라인 글씨 크게(2단계 업) */
-      .tp-line {
-        font-size: 1.35rem;   /* 기본보다 확 크게 */
-        line-height: 1.85rem;
-        font-weight: 800;
-        letter-spacing: 0.2px;
-        margin: 0.25rem 0;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      }
-      .tp-red { color: #e53935; }
-      .tp-blue { color: #1e88e5; }
+      .tp-wrap { margin-top: 0.70rem; }
 
-      /* 결과 영역 여백 */
-      .tp-wrap { margin-top: 0.7rem; }
+      /* 한 줄 레이아웃 */
+      .tp-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0.35rem 0;
+        flex-wrap: wrap;
+      }
+
+      /* 라벨(01게임 多(고정) 등) */
+      .tp-label {
+        font-weight: 900;
+        font-size: 1.10rem;
+        padding: 0.25rem 0.45rem;
+        border-radius: 10px;
+        color: white;
+        line-height: 1.25rem;
+        white-space: nowrap;
+      }
+      .tp-label-red  { background: #e53935; }
+      .tp-label-blue { background: #1e88e5; }
+
+      /* 공(로또볼) */
+      .tp-ball {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 1.05rem;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+        border: 1px solid rgba(0,0,0,0.15);
+        user-select: none;
+      }
+
+      /* 구간별 색상 */
+      .b1  { background: #f6c343; color: #111; }  /* 1~9 노랑 */
+      .b2  { background: #1e88e5; color: #fff; }  /* 10~19 파랑 */
+      .b3  { background: #e53935; color: #fff; }  /* 20~29 빨강 */
+      .b4  { background: #9e9e9e; color: #111; }  /* 30~39 회색 */
+      .b5  { background: #43a047; color: #fff; }  /* 40~45 초록 */
+
+      /* 공 컨테이너 */
+      .tp-balls {
+        display: inline-flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
     </style>
     """,
     unsafe_allow_html=True,
@@ -96,8 +132,8 @@ def rebuild_cache_from_csv():
     valid = 0
     with open(CSV_FILE, "r", encoding="utf-8", errors="ignore") as f:
         lines = f.readlines()
-
     data_lines = lines[1:] if len(lines) > 0 else []  # 헤더 제외
+
     for line in data_lines:
         nums = parse_numbers(line)
         if not nums:
@@ -136,18 +172,41 @@ def make_games(freq):
     cold10 = [n for n, _ in sorted_nums[-10:]]
 
     games = []
-    games.append(sorted(hot10[:6]))            # 01 HOT 고정
-    for _ in range(4):                         # 02~05 HOT 랜덤
+    games.append(sorted(hot10[:6]))            # 01 多(고정)
+    for _ in range(4):                         # 02~05 多(램덤)
         games.append(random_pick_with_filter(hot10))
-    games.append(sorted(cold10[-6:]))          # 06 COLD 고정
-    for _ in range(4):                         # 07~10 COLD 랜덤
+    games.append(sorted(cold10[-6:]))          # 06 小(고정)
+    for _ in range(4):                         # 07~10 小(램덤)
         games.append(random_pick_with_filter(cold10))
     return games
 
-# --- 앱 시작 ---
+def fmt2(n: int) -> str:
+    return f"{n:02d}"
+
+def num_class(n: int) -> str:
+    if 1 <= n <= 9:
+        return "b1"
+    if 10 <= n <= 19:
+        return "b2"
+    if 20 <= n <= 29:
+        return "b3"
+    if 30 <= n <= 39:
+        return "b4"
+    return "b5"  # 40~45
+
+def game_name(idx: int) -> str:
+    # 01~05: 多, 06~10: 小
+    if idx == 1:
+        return f"{idx:02d}게임  多(고정)"
+    if 2 <= idx <= 5:
+        return f"{idx:02d}게임  多(램덤)"
+    if idx == 6:
+        return f"{idx:02d}게임  小(고정)"
+    return f"{idx:02d}게임  小(램덤)"
+
+# ---- 앱 시작 ----
 st.title("로또번호 (TaePung)")
 
-# 캐시 없으면 자동 생성
 cache = load_cache()
 if cache is None:
     rebuild_cache_from_csv()
@@ -168,11 +227,19 @@ if games:
     st.markdown('<div class="tp-wrap">', unsafe_allow_html=True)
 
     for idx, nums in enumerate(games, start=1):
-        color_class = "tp-red" if idx <= 5 else "tp-blue"
-        line = f"{idx:02d}게임: " + " - ".join(map(str, nums))
-        st.markdown(
-            f'<div class="tp-line {color_class}">{line}</div>',
-            unsafe_allow_html=True,
+        label_color = "tp-label-red" if idx <= 5 else "tp-label-blue"
+        label_text = game_name(idx)
+
+        balls_html = ""
+        for n in nums:
+            balls_html += f'<span class="tp-ball {num_class(n)}">{fmt2(n)}</span>'
+
+        row_html = (
+            f'<div class="tp-row">'
+            f'  <span class="tp-label {label_color}">{label_text}</span>'
+            f'  <span class="tp-balls">{balls_html}</span>'
+            f'</div>'
         )
+        st.markdown(row_html, unsafe_allow_html=True)
 
     st.markdown("</div>", unsafe_allow_html=True)
