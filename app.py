@@ -18,17 +18,27 @@ st.set_page_config(page_title="로또번호 (TaePung)", page_icon="🎲", layout
 st.markdown(
     """
     <style>
-      h1 { font-size: 1.55rem !important; margin-bottom: 0.55rem; }
+      /* 제목 중앙정렬 */
+      h1 {
+        font-size: 1.55rem !important;
+        margin-bottom: 0.7rem;
+        text-align: center;
+      }
 
+      /* 버튼 중앙정렬 + 크기 유지 */
+      .stButton {
+        display: flex;
+        justify-content: center;
+      }
       .stButton>button {
-        width: 100%;
+        width: 85%;
         padding: 0.75rem 1rem;
         font-size: 1.15rem;
         font-weight: 800;
-        border-radius: 14px;
+        border-radius: 16px;
       }
 
-      .tp-wrap { margin-top: 0.70rem; }
+      .tp-wrap { margin-top: 0.75rem; }
 
       .tp-row {
         display: flex;
@@ -38,7 +48,7 @@ st.markdown(
         flex-wrap: wrap;
       }
 
-      /* 라벨 (多/小) */
+      /* 라벨 (多 / 小) */
       .tp-label {
         font-weight: 900;
         font-size: 1.05rem;
@@ -50,7 +60,7 @@ st.markdown(
       .tp-label-red  { background: #e53935; }
       .tp-label-blue { background: #1e88e5; }
 
-      /* 🔽 로또 공 크기 1단계 축소 */
+      /* 로또 공 */
       .tp-ball {
         width: 34px;
         height: 34px;
@@ -185,9 +195,9 @@ def num_class(n):
 
 def label_text(idx):
     if idx == 1: return "多 (고정)"
-    if 2 <= idx <= 5: return "多 (램덤)"
+    if 2 <= idx <= 5: return "多 (랜덤)"
     if idx == 6: return "小 (고정)"
-    return "小 (램덤)"
+    return "小 (랜덤)"
 
 # ================= App =================
 st.title("로또번호 (TaePung)")
