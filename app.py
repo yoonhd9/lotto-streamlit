@@ -18,20 +18,23 @@ st.set_page_config(page_title="로또번호 (TaePung)", page_icon="🎲", layout
 st.markdown(
     """
     <style>
-      /* 제목 중앙정렬 */
+      /* 제목 중앙 */
       h1 {
         font-size: 1.55rem !important;
         margin-bottom: 0.7rem;
         text-align: center;
       }
 
-      /* 버튼 중앙정렬 + 크기 유지 */
-      .stButton {
-        display: flex;
-        justify-content: center;
+      /* 버튼 영역 전체 중앙 고정 */
+      div.stButton {
+        text-align: center;
       }
-      .stButton>button {
-        width: 85%;
+
+      /* 버튼 자체 중앙 + 폭 조절 */
+      div.stButton > button {
+        margin: 0 auto;
+        display: inline-block;
+        width: 70%;
         padding: 0.75rem 1rem;
         font-size: 1.15rem;
         font-weight: 800;
@@ -48,7 +51,7 @@ st.markdown(
         flex-wrap: wrap;
       }
 
-      /* 라벨 (多 / 小) */
+      /* 라벨 */
       .tp-label {
         font-weight: 900;
         font-size: 1.05rem;
@@ -75,12 +78,12 @@ st.markdown(
         user-select: none;
       }
 
-      /* 구간별 색상 */
-      .b1 { background: #f6c343; color: #111; } /* 1~9 */
-      .b2 { background: #1e88e5; color: #fff; } /* 10~19 */
-      .b3 { background: #e53935; color: #fff; } /* 20~29 */
-      .b4 { background: #9e9e9e; color: #111; } /* 30~39 */
-      .b5 { background: #43a047; color: #fff; } /* 40~45 */
+      /* 구간 색상 */
+      .b1 { background: #f6c343; color: #111; }
+      .b2 { background: #1e88e5; color: #fff; }
+      .b3 { background: #e53935; color: #fff; }
+      .b4 { background: #9e9e9e; color: #111; }
+      .b5 { background: #43a047; color: #fff; }
 
       .tp-balls {
         display: inline-flex;
